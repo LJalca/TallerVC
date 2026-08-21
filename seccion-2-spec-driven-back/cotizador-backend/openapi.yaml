@@ -1,0 +1,80 @@
+openapi: 3.0.3
+info:
+  title: Cotizador de Reparación de Calzados
+  version: "1.0.0"
+paths:
+  /api/tipos-calzado:
+    get:
+      summary: Lista los tipos de calzado disponibles
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/TipoCalzado' }
+  /api/tipos-reparacion:
+    get:
+      summary: Lista los tipos de reparación disponibles
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/TipoReparacion' }
+  /api/cotizaciones:
+    post:
+      summary: Genera una cotización estimada
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CotizacionRequest' }
+      responses:
+        '201':
+          description: Cotización generada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CotizacionResponse' }
+        '400':
+          description: Solicitud inválida
+        '404':
+          description: Tipo de calzado o reparación no encontrados
+components:
+  schemas:
+    TipoCalzado:
+      type: object
+      properties:
+        id: { type: string }
+        nombre: { type: string }
+        factorComplejidad: { type: number, format: float }
+    TipoReparacion:
+      type: object
+      properties:
+        id: { type: string }
+        nombre: { type: string }
+        precioBase: { type: number, format: float }
+        tiempoEstimadoDias: { type: integer }
+    CotizacionRequest:
+      type: object
+      required: [tipoCalzadoId, tipoReparacionIds]
+      properties:
+        tipoCalzadoId: { type: string }
+        tipoReparacionIds:
+          type: array
+          minItems: 1
+          items: { type: string }
+        urgente: { type: boolean, default: false }
+    CotizacionResponse:
+      type: object
+      properties:
+        id: { type: string }
+        subtotal: { type: number, format: float }
+        recargoUrgencia: { type: number, format: float }
+        total: { type: number, format: float }
+        moneda: { type: string, example: USD }
+        tiempoEstimadoDias: { type: integer }
+        fechaCreacion: { type: string, format: date-time }

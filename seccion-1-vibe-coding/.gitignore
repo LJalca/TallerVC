@@ -3,3 +3,6 @@
 
 # Datos persistidos por Docker
 mysql_data/
+
+# Logs de Nginx — solo para uso local
+nginx/logs/*.log

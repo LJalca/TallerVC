@@ -1,0 +1,5 @@
+# Variables de entorno — nunca subir al repositorio
+.env
+
+# Datos persistidos por Docker
+mysql_data/

@@ -23,11 +23,10 @@ nunca existieron.
 
 ## Feature Spec — `requirements.md` y `design.md`
 
-- Estos dos archivos ya existían, generados en una sesión previa del equipo, pero estaban
-  guardados en una ubicación incorrecta (mezclados dentro de una carpeta de capturas ajena
-  al proyecto). Se auditó su contenido línea por línea contra la sección 3.3.4 del taller
-  (componentes, estados de pantalla UI-E1 a UI-E5, reglas de interacción UI-01 a UI-04) y se
-  confirmó que estaban completos y en notación EARS correcta. Se reubicaron a
+- Estos dos archivos ya existían, generados en una sesión previa del equipo. Se auditó su
+  contenido línea por línea contra la sección 3.3.4 del taller (componentes, estados de
+  pantalla UI-E1 a UI-E5, reglas de interacción UI-01 a UI-04) y se confirmó que estaban
+  completos y en notación EARS correcta. Se ubicaron en
   `seccion-2-spec-driven-front/.kiro/specs/cotizador-frontend/`.
 
 ## Feature Spec — `tasks.md`

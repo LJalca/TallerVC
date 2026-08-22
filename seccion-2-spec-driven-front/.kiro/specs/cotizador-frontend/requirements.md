@@ -29,19 +29,33 @@
 |--------|------|--------------------|-------------------|
 | POST | `/api/cotizaciones` | `{ tipoCalzadoId, tipoReparacionIds[], urgente }` | `201 Created` — `CotizacionResponse` |
 
-**CotizacionResponse:**
+**CotizacionResponse** (contrato real de `CotizacionResponse.java` del backend):
 ```json
 {
-  "nombreCalzado":             "string",
-  "reparaciones":              [{ "nombreReparacion": "string", "precioBase": "string", "subtotal": "string" }],
-  "sumaSubtotales":            "string",
-  "recargo":                   "string | null",
-  "porcentajeRecargo":         "string | null",
-  "total":                     "string",
-  "tiempoEstimadoEntregaDias": "number",
-  "urgente":                   "boolean"
+  "id":               "string (UUID)",
+  "fechaCreacion":    "string",
+  "calzadoId":        "string (UUID)",
+  "nombreCalzado":    "string",
+  "reparacionIds":    ["string (UUID)"],
+  "nivelUrgencia":    "'NORMAL' | 'URGENTE'",
+  "subtotal":         "number",
+  "recargoUrgencia":  "number",
+  "total":            "number",
+  "moneda":           "string",
+  "tiempoEstimadoDias": "number"
 }
 ```
+
+Notas sobre este contrato, relevantes para el frontend:
+- `reparacionIds` es solo una lista de ids: la API **no** devuelve nombre, precio base ni
+  subtotal por línea de reparación. El nombre de cada reparación seleccionada se resuelve
+  contra el catálogo ya cargado en memoria (`GET /api/tipos-reparacion`), por id — es un
+  lookup, no un cálculo de negocio.
+- No existe un desglose de subtotal por línea ni un `porcentajeRecargo`: solo el agregado
+  `subtotal` y el agregado `recargoUrgencia`.
+- No hay un campo `urgente: boolean` en la respuesta; el nivel de urgencia real de la
+  cotización generada se lee de `nivelUrgencia === 'URGENTE'`, y `recargoUrgencia` siempre
+  llega como número (0 cuando el nivel es `NORMAL`, nunca `null`).
 
 **ErrorResponse (HTTP 400, 404, 500):**
 ```json
@@ -192,45 +206,43 @@ para comunicar al usuario que se está procesando la solicitud.
 
 ### REQ-019 — Presentación del detalle de reparaciones
 
-**When** la API responde con código HTTP 201 y el cuerpo contiene el array `reparaciones`,
-**the system shall** mostrar cada línea de reparación con su `nombreReparacion`, `precioBase`
-y `subtotal` en el área de resultado, formateados con dos decimales.
+**When** la API responde con código HTTP 201 y el cuerpo contiene el array `reparacionIds`,
+**the system shall** mostrar, para cada id, el nombre de la reparación correspondiente en
+el área de resultado, resolviendo el nombre contra el catálogo ya cargado desde
+`GET /api/tipos-reparacion` (la API de cotización no devuelve precio ni subtotal por línea).
 
-### REQ-020 — Presentación de la suma de subtotales
+### REQ-020 — Presentación del subtotal
 
-**When** la API responde con código HTTP 201 y el cuerpo contiene el campo `sumaSubtotales`,
-**the system shall** mostrar el valor de `sumaSubtotales` en el área de resultado como
-subtotal previo a recargos, formateado con dos decimales.
+**When** la API responde con código HTTP 201 y el cuerpo contiene el campo `subtotal`,
+**the system shall** mostrar el valor de `subtotal` en el área de resultado como el monto
+previo a recargos.
 
 ### REQ-021 — Presentación del recargo por urgencia
 
-**When** la API responde con código HTTP 201 y los campos `recargo` y `porcentajeRecargo`
-son distintos de `null`,
-**the system shall** mostrar ambos valores en el área de resultado indicando claramente que
-corresponden al recargo por servicio urgente.
+**When** la API responde con código HTTP 201 y el campo `nivelUrgencia` es `'URGENTE'`,
+**the system shall** mostrar el valor de `recargoUrgencia` en el área de resultado
+indicando claramente que corresponde al recargo por servicio urgente.
 
 ### REQ-022 — Omisión del recargo cuando no aplica
 
-**When** la API responde con código HTTP 201 y los campos `recargo` y `porcentajeRecargo`
-son `null`,
-**the system shall** omitir la fila de recargo en el área de resultado sin mostrar valores
-vacíos ni la palabra "null".
+**When** la API responde con código HTTP 201 y el campo `nivelUrgencia` es `'NORMAL'`,
+**the system shall** omitir la fila de recargo en el área de resultado, incluso si
+`recargoUrgencia` llega en `0`.
 
 ### REQ-023 — Presentación del total
 
 **When** la API responde con código HTTP 201 y el cuerpo contiene el campo `total`,
-**the system shall** mostrar el valor de `total` en el área de resultado de forma destacada,
-formateado con dos decimales.
+**the system shall** mostrar el valor de `total` en el área de resultado de forma destacada.
 
 ### REQ-024 — Presentación del tiempo estimado de entrega
 
 **When** la API responde con código HTTP 201 y el cuerpo contiene el campo
-`tiempoEstimadoEntregaDias`,
+`tiempoEstimadoDias`,
 **the system shall** mostrar ese valor en el área de resultado acompañado de la unidad "días".
 
 ### REQ-025 — Indicación de servicio urgente en el resultado
 
-**When** la API responde con código HTTP 201 y el campo `urgente` es `true`,
+**When** la API responde con código HTTP 201 y el campo `nivelUrgencia` es `'URGENTE'`,
 **the system shall** mostrar una etiqueta o distintivo visible en el área de resultado que
 indique que la cotización corresponde a un servicio urgente.
 

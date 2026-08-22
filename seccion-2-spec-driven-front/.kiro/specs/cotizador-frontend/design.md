@@ -317,19 +317,25 @@ function mostrarErrorCatalogo(mensaje)
 
 ### Construcción del HTML de resultado (`renderizarResultado`)
 
+Consume el contrato real de `CotizacionResponse` (backend, `com.tallerdae.cotizador`):
+`nombreCalzado`, `reparacionIds` (solo ids), `nivelUrgencia` (`'NORMAL'|'URGENTE'`),
+`subtotal`, `recargoUrgencia`, `total`, `tiempoEstimadoDias`. No hay desglose por línea de
+reparación ni `porcentajeRecargo` en la API: el nombre de cada reparación se resuelve
+contra el catálogo ya cargado en `state.js` (lookup por id, no cálculo de negocio).
+
 ```
 #resultado (section, aria-live="polite")
-  ├─ [si urgente] <span class="etiqueta-urgente">Servicio urgente</span>   // REQ-025
+  ├─ [si nivelUrgencia === 'URGENTE'] <span class="etiqueta-urgente">Servicio urgente</span>  // REQ-025
   ├─ <h2>Cotización — {nombreCalzado}</h2>                                 // REQ-018
-  ├─ <table class="tabla-reparaciones">                                    // REQ-019
-  │     <thead> Reparación | Precio base | Subtotal </thead>
-  │     <tbody> una <tr> por cada elemento de reparaciones[] </tbody>
-  │  </table>
-  ├─ <p class="subtotal">Subtotal: {sumaSubtotales}</p>                    // REQ-020
-  ├─ [si recargo != null]                                                  // REQ-021, REQ-022
-  │     <p class="recargo">Recargo urgente ({porcentajeRecargo}): {recargo}</p>
+  ├─ <ul class="lista-reparaciones">                                       // REQ-019
+  │     una <li> por cada id en reparacionIds[], con el nombre resuelto
+  │     contra tiposReparacion del catálogo (state.js → getCatalogos())
+  │  </ul>
+  ├─ <p class="subtotal">Subtotal: {subtotal}</p>                         // REQ-020
+  ├─ [si nivelUrgencia === 'URGENTE']                                      // REQ-021, REQ-022
+  │     <p class="recargo">Recargo urgente: {recargoUrgencia}</p>
   ├─ <p class="total">Total: {total}</p>                                   // REQ-023
-  └─ <p class="tiempo">Tiempo estimado: {tiempoEstimadoEntregaDias} días</p> // REQ-024
+  └─ <p class="tiempo">Tiempo estimado: {tiempoEstimadoDias} días</p>      // REQ-024
 ```
 
 ---
@@ -455,12 +461,12 @@ fetch() lanza TypeError (sin conexión)
 | REQ-016 | app.js | `mostrarSpinner()`, `deshabilitarBotonEnvio()` |
 | REQ-017 | app.js | `ocultarSpinner()`, `habilitarBotonEnvio()` en bloque `finally` |
 | REQ-018 | app.js | `renderizarResultado()` — `nombreCalzado` |
-| REQ-019 | app.js | `renderizarResultado()` — tabla `reparaciones[]` |
-| REQ-020 | app.js | `renderizarResultado()` — `sumaSubtotales` |
-| REQ-021 | app.js | `renderizarResultado()` — fila condicional `recargo` |
-| REQ-022 | app.js | `renderizarResultado()` — guarda `if (recargo !== null)` |
+| REQ-019 | app.js, state.js | `renderizarResultado()` — `reparacionIds[]` resueltos contra `getCatalogos().tiposReparacion` |
+| REQ-020 | app.js | `renderizarResultado()` — `subtotal` |
+| REQ-021 | app.js | `renderizarResultado()` — fila condicional `recargoUrgencia` |
+| REQ-022 | app.js | `renderizarResultado()` — guarda `if (nivelUrgencia === 'URGENTE')` |
 | REQ-023 | app.js | `renderizarResultado()` — `total` destacado |
-| REQ-024 | app.js | `renderizarResultado()` — `tiempoEstimadoEntregaDias` |
+| REQ-024 | app.js | `renderizarResultado()` — `tiempoEstimadoDias` |
 | REQ-025 | app.js, estilos.css | `renderizarResultado()` — `.etiqueta-urgente` |
 | REQ-026 | app.js | `renderizarResultado()` reemplaza contenido de `#resultado` |
 | REQ-027 | api.js, app.js | normalización 400/404, `renderizarError()` |

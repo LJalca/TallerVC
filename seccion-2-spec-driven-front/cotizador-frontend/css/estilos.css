@@ -1,0 +1,385 @@
+/* ==========================================================================
+   1. Variables CSS (custom properties)
+   ========================================================================== */
+
+:root {
+  --color-primario:    #2563eb;
+  --color-primario-hover: #1d4ed8;
+  --color-error:       #dc2626;
+  --color-exito:       #16a34a;
+  --color-urgente:     #ea580c;
+  /* Variantes oscuras usadas SOLO como color de texto o fondo de etiqueta,
+     para garantizar contraste >= 4.5:1 sobre fondo claro (REQ-035).
+     Los tonos base de arriba se conservan para bordes y acentos. */
+  --color-error-texto:   #b91c1c;
+  --color-urgente-texto: #9a3412;
+  --color-texto:       #111827;
+  --color-fondo:       #f9fafb;
+  --color-fondo-panel: #ffffff;
+  --color-borde:       #d1d5db;
+  --radio-borde:       4px;
+  --espacio-base:      1rem;
+  --fuente-base:       system-ui, sans-serif;
+  --ancho-maximo:      960px;
+}
+
+/* ==========================================================================
+   2. Reset / base
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+html {
+  font-size: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--fuente-base);
+  color: var(--color-texto);
+  background-color: var(--color-fondo);
+  line-height: 1.5;
+}
+
+h1,
+h2 {
+  color: var(--color-texto);
+  line-height: 1.25;
+}
+
+button {
+  font-family: inherit;
+}
+
+/* ==========================================================================
+   3. Layout (header, main, secciones)
+   ========================================================================== */
+
+header {
+  background-color: var(--color-fondo-panel);
+  border-bottom: 1px solid var(--color-borde);
+  padding: var(--espacio-base);
+}
+
+header h1 {
+  max-width: var(--ancho-maximo);
+  margin: 0 auto;
+  font-size: 1.5rem;
+}
+
+main {
+  max-width: var(--ancho-maximo);
+  margin: 0 auto;
+  padding: var(--espacio-base);
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--espacio-base) * 1.5);
+}
+
+section {
+  background-color: var(--color-fondo-panel);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-borde);
+  padding: calc(var(--espacio-base) * 1.25);
+}
+
+/* ==========================================================================
+   4. Componentes — formulario (.campo, fieldset, label, select, input)
+   ========================================================================== */
+
+#form-cotizacion {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--espacio-base) * 1.25);
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.campo label {
+  font-weight: 600;
+  color: var(--color-texto);
+}
+
+.campo select,
+.campo input[type="text"],
+.campo input[type="number"] {
+  width: 100%;
+  padding: 0.5rem 0.625rem;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-borde);
+  background-color: var(--color-fondo-panel);
+  color: var(--color-texto);
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+.campo--inline {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.campo--inline label {
+  font-weight: 400;
+}
+
+/* Marca de campo inválido. El selector hijo directo evita teñir de rojo los
+   checkboxes anidados dentro de #reparaciones-lista. */
+.campo--invalido select,
+.campo--invalido > input {
+  border-color: var(--color-error);
+}
+
+fieldset.campo--invalido {
+  border-color: var(--color-error);
+}
+
+fieldset {
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-borde);
+  padding: var(--espacio-base);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+legend {
+  font-weight: 600;
+  padding: 0 0.25rem;
+}
+
+#reparaciones-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* ==========================================================================
+   5. Componentes — checkboxes de reparación
+   ========================================================================== */
+
+.reparacion-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0;
+}
+
+.reparacion-item input[type="checkbox"] {
+  width: 1.125rem;
+  height: 1.125rem;
+  flex-shrink: 0;
+}
+
+.reparacion-item label {
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   6. Componentes — botón (#btn-cotizar, estados :hover, :disabled)
+   ========================================================================== */
+
+#btn-cotizar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: var(--radio-borde);
+  background-color: var(--color-primario);
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#btn-cotizar:hover:not(:disabled) {
+  background-color: var(--color-primario-hover);
+}
+
+#btn-cotizar:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;   /* REQ-036 */
+}
+
+/* ==========================================================================
+   7. Componentes — spinner de carga (.spinner)
+   ========================================================================== */
+
+.spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: girar 0.7s linear infinite;
+}
+
+@keyframes girar {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ==========================================================================
+   8. Componentes — mensajes de error (.campo__error, .alerta--error)
+   ========================================================================== */
+
+.campo__error {
+  display: none;
+  color: var(--color-error);
+  font-size: 0.875rem;
+}
+
+.campo__error--visible {
+  display: block;
+}
+
+.alerta {
+  padding: 0.75rem var(--espacio-base);
+  border-radius: var(--radio-borde);
+  font-weight: 500;
+}
+
+.alerta--error {
+  background-color: #fee2e2;
+  color: var(--color-error-texto); /* 5.3:1 sobre #fee2e2 — REQ-035 */
+  border: 1px solid var(--color-error);
+}
+
+/* ==========================================================================
+   9. Componentes — resultado (#resultado, .lista-reparaciones, .total, .etiqueta-urgente)
+   ========================================================================== */
+
+#resultado {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.etiqueta-urgente {
+  display: inline-block;
+  align-self: flex-start;
+  /* Fondo oscuro: blanco sobre #ea580c da 3.6:1, insuficiente para texto
+     pequeño. Con #9a3412 el contraste sube a 7.3:1 (REQ-035). */
+  background-color: var(--color-urgente-texto);
+  border: 1px solid var(--color-urgente);
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.8125rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+}
+
+.lista-reparaciones {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.lista-reparaciones li {
+  padding: 0.375rem 0.625rem;
+  border-bottom: 1px solid var(--color-borde);
+  overflow-wrap: break-word;
+}
+
+.subtotal,
+.recargo,
+.tiempo {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.recargo {
+  /* 7.3:1 sobre fondo blanco — REQ-035 (texto normal exige >= 4.5:1) */
+  color: var(--color-urgente-texto);
+}
+
+.total {
+  margin: 0;
+  font-size: 1.375rem;
+  font-weight: bold;
+  color: var(--color-exito);
+}
+
+/* ==========================================================================
+   10. Utilidades (.sr-only, .hidden)
+   ========================================================================== */
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+
+.hidden {
+  display: none;
+}
+
+/* Foco visible por teclado (REQ-033) */
+select:focus-visible,
+input:focus-visible,
+button:focus-visible {
+  outline: 3px solid var(--color-primario);
+  outline-offset: 2px;
+}
+
+/* ==========================================================================
+   11. Media queries (≤ 600 px)
+   ========================================================================== */
+
+@media (max-width: 600px) {
+  main {
+    padding: 0.75rem;
+    gap: var(--espacio-base);
+  }
+
+  section {
+    padding: var(--espacio-base);
+  }
+
+  .campo--inline {
+    flex-wrap: wrap;
+  }
+
+  /* Los checkboxes de reparación quedan en una sola columna (REQ-034) */
+  #reparaciones-lista {
+    flex-direction: column;
+  }
+
+  #btn-cotizar {
+    width: 100%;
+  }
+
+  .lista-reparaciones li {
+    padding: 0.3rem 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  .total {
+    font-size: 1.25rem;
+  }
+}

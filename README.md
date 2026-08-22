@@ -1,6 +1,6 @@
 # Taller de Desarrollo con IA: Vibe Coding & Spec-Driven Development
 
-> **Maestría en Computación con Mención en Seguridad Informática / Desarrollo de Aplicaciones Empresariales**  
+
 > **Universidad Politécnica Salesiana (UPS)**  
 > **Sistema:** Cotizador de Reparación de Calzado (*Taller DAE*)
 
